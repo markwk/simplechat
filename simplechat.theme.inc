@@ -19,9 +19,6 @@ function simplechat_theme($existing, $type, $theme, $path) {
     'simplechat_message_username' => array(
       'arguments' => array('message', 'skip_permission_check'),
     ),
-    'simplechat_chat_admin_buttons' => array(
-      'arguments' => array('chat'),
-    ),
     'simplechat_latest_message' => array(
       'arguments' => array('message'),
     ),
@@ -31,12 +28,6 @@ function simplechat_theme($existing, $type, $theme, $path) {
     'simplechat_system_message' => array(
       'arguments' => array('message', 'node'),
     ),
-    'simplechat_chat_archive' => array(
-      'arguments' => array('node'),
-    ),
-    'simplechat_chat_teaser' => array(
-      'arguments' => array('node'),
-    ),
    );
 }
 
@@ -44,13 +35,6 @@ function simplechat_theme($existing, $type, $theme, $path) {
  * Implements theme().
  */
 function theme_simplechat_default($element) {
-/*
-  global $user; 
-    $base_path=drupal_get_path('module','simplechat');     
-    $simplechat_maxusers = variable_get('simplechat_maxusers', '20');
-
-  return theme_render_template(drupal_get_path('module', 'simplechat') .'/templates/simplechat.tpl.php', array('simplechat_maxusers' => $simplechat_maxusers, ));
-} */
   global $user;
 
   $node = $variables['node'];
@@ -157,49 +141,7 @@ function theme_simplechat_buttons($variables) {
   $output = drupal_render(drupal_get_form('simplechat_chat_buttons', $node));
   return '<div id="simplechat-chat-buttons">' . $output . '</div>';
 }
-/**
- * Theme the chat archive page.
- *
- * @ingroup themeable
- */
-function theme_simplechat_chat_archive($variables) {
-  global $user;
 
-  $node = $variables['node'];
-  $is_admin = user_access('administer chats') || user_access('administer chat rooms');
-
-  $html = '<p>' . t('Archived on !date.', array('!date' => format_date($node->chat->when_archived, 'medium'))) . '</p>';
-  $html .= '<div id="simplechat-container-archive">';
-  if ($messages = simplechat_chat_load_messages($node->nid)) {
-    foreach ($messages as $message) {
-      if ($message->uid) {
-        $name = l($message->name, 'user/'. $message->uid);
-      }
-      else {
-        $name = variable_get('simplechat_guest_user_prefix', t('guest-')) . $message->guest_id;
-      }
-      if (empty($message->recipient_uid)) {
-        $row_html = '<p class="simplechat-old-msg">' . format_date($message->modified, 'small') . " $name: " . check_plain($message->msg) . "</p>";
-      }
-      else if ($is_admin || $user->uid == $message->uid || $user->uid == $message->recipient_uid) {
-        $row_html = '<p class="simplechat-old-msg">' . format_date($message->modified, 'small');
-        if ($message->uid == $user->uid && $recipient != $name) {
-          $row_html .= '(' . t('privately to %recipient', array('%recipient' => $recipient)) . ')> ';
-        }
-        else {
-          $row_html .= '(' . t('privately') . '):';
-        }
-        $row_html .= check_plain($message->msg) . '</p>';
-      }
-      $html .= "$row_html\n";
-    }
-  }
-  else {
-    $html .= '<p>' . t('This chat contains no messages.') . '</p>';
-  }
-  $html .= '</div>';
-  return $html;
-}
 
 /**
  * Theme the teaser for a chat node.
@@ -232,17 +174,6 @@ function theme_simplechat_chat_teaser($variables) {
       }
     }
   }
-}
-
-/**
- * Theme simplechat chat admin buttons.
- *
- * @param mixed $chat
- * @return string
- */
-function theme_simplechat_chat_admin_buttons($variables) {
-  $chat = $variables['chat'];
-  return '<div class="simplechat-chat-admin-buttons">' . drupal_get_form('simplechat_chat_admin_buttons_form_' . $chat->nid, $chat) . '</div>';
 }
 
 /**

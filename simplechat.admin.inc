@@ -8,7 +8,7 @@
  * Admin Settings Form
  */
 function simplechat_admin_settings() {
-  $form['simplechat_maxusers'] = array(
+  $form['simplechat_global_maxusers'] = array(
 	'#type' => 'select',
 	'#options' => drupal_map_assoc(range(2, 1000)),
 	'#title' => t('Maximum Users Per Simple Chat'),

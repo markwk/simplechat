@@ -69,6 +69,7 @@ function simplechat_field_formatter_view($obj_type, $object, $field, $instance, 
 	case 'simplechat_default':
 	    global $user;
 	    $nid = arg(1);
+	    // simplechat_chat_insert($node)
         // Add User to socket.io channel for this chat
 	    nodejs_add_user_to_channel($user->uid, 'simplechat_' . $nid);
 	    foreach ($items as $delta => $item) {
@@ -112,7 +113,32 @@ function simplechat_field_widget_form(&$form, &$form_state, $field, $instance, $
       '#default_value' => isset($items[$delta]['show_simplechat']) ? $items[$delta]['show_simplechat'] : FALSE,
       '#title' => t('Show simplechat with this Node'),
       );
-        }
+      // TODO: set this max to limit according to global max users
+		$element['max_users'] = array(
+	      '#type' => 'select',
+	      '#options' => drupal_map_assoc(range(2, 1000)),
+	      '#default_value' => isset($items[$delta]['max_users']) ? $items[$delta]['max_users'] : 1000,	      
+	      '#title' => t('Maximum Number of Users for this Chat'),
+	       );
+      $element['previous_messages_display_count'] = array(
+      '#type' => 'select',
+      '#options' => drupal_map_assoc(range(2, 20)),
+      '#display' => drupal_map_assoc(range(2, 20)),
+	  '#default_value' => isset($items[$delta]['previous_messages_display_count']) ? $items[$delta]['previous_messages_display_count'] : 20,	  
+      '#title' => t('Number of previous messages to display'),
+       );
+/*
+      $element['is_archived'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => isset($items[$delta]['is_archived']) ? $items[$delta]['is_archived'] : FALSE,
+      '#title' => t('Archive this chat?'),
+       );
+      $element['when_archived'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Show simplechat with this Node'),
+       );
+*/
+         }
   return $element;
 }
 

@@ -7,15 +7,11 @@ function simplechat_chat_insert($node) {
   $chat = array(
     'nid' => $node->nid,
     'crid' => isset($node->simplechat_nid) ? $node->simplechat_nid : 0,
-    'idle_freq' => isset($node->idle_freq) ? $node->idle_freq : 20,
     'max_users' => isset($node->max_users) ? $node->max_users : 0,
-    'kicked_out_message' => isset($node->kicked_out_message) ? $node->kicked_out_message : '',
-    'banned_message' => isset($node->banned_message) ? $node->banned_message : '',
     'module' => isset($node->module) ? $node->module : 'simplechat',
     'previous_messages_display_count' => isset($node->previous_messages_display_count) ? $node->previous_messages_display_count : 20,
-    'private' => isset($node->private) ? $node->private : 0,
-    'profile_picture' => isset($node->profile_picture) ? $node->profile_picture : '',
-    'imagecache_preset' => isset($node->imagecache_preset) ? $node->imagecache_preset : '',
+    // 'profile_picture' => isset($node->profile_picture) ? $node->profile_picture : '',
+    // 'imagecache_preset' => isset($node->imagecache_preset) ? $node->imagecache_preset : '',
   );
   drupal_write_record('simplechat_chat', $chat);
   simplechat_chat_update_cache($node->nid, 0);
@@ -27,9 +23,6 @@ function simplechat_chat_insert($node) {
 function simplechat_chat_delete(&$node) {
   cache_clear_all('simplechat_chat_list', 'cache');
   db_query('DELETE FROM {simplechat_chat} WHERE nid = :nid', array(':nid' => $node->nid));
-  db_query('DELETE FROM {simplechat_chat_online_list} WHERE ccid = :ccid', array(':ccid' => $node->nid));
-  db_query('DELETE FROM {simplechat_chat_ban_list} WHERE nid = :nid', array(':nid' => $node->nid));
-  db_query('DELETE FROM {simplechat_chat_kicked_list} WHERE nid = :nid', array(':nid' => $node->nid));
   $cache_file = file_directory_temp() . '/simplechat.chat.' . $node->nid . '.cache';
   unlink($cache_file);
 }
@@ -42,11 +35,6 @@ function simplechat_chat_load($nodes) {
     $chat->simplechat = $chat->crid ? node_load($chat->crid) : FALSE;
     $chat->latest_msg = simplechat_chat_get_latest_message($chat->nid);
     $chat->msg_count = simplechat_chat_get_message_count($chat->nid);
-    $chat->banned_list = simplechat_chat_get_banned_list($chat);
-    $chat->kicked_list = simplechat_chat_get_kicked_list($chat);
-    if ($chat->private) {
-      $chat->allowed_uids = simplechat_chat_load_allowed_uids($chat);
-    }
     $nodes[$chat->nid]->chat = $chat;
   }
 }
@@ -74,65 +62,6 @@ function simplechat_chat_get_message_count($ccid) {
   return db_query($sql, array(':ccid' => $ccid))->fetchField();
 }
 
-/**
- * Implements hook_view().
- */
-function simplechat_chat_view($node, $view_mode) {
-  global $user;
-
-  if ($view_mode == 'full' && node_is_page($node)) {
-
-    $bc = drupal_get_breadcrumb();
-    if ($node->chat->simplechat) {
-      $bc[] = l($node->chat->simplechat->title, "node/{$node->chat->simplechat->nid}");
-    }
-    $bc[] = l($node->title, "node/$node->nid");
-    drupal_set_breadcrumb($bc);
-
-    if (!isset($node->chat->when_archived)) {
-      if (simplechat_max_users_reached($node)) {
-        $content = theme('simplechat_chat_max_users', array('node' => $node));
-      }
-      else {
-        if (!simplechat_chat_register_user($node)) {
-          simplechat_update_last_seen_time($node, session_id());
-          // from simplechat_node.js module
-          $nodejs_message = (object) array(
-            'channel' => 'simplechat_chat_' . $node->nid,
-            'broadcast' => FALSE,
-            'type' => 'userSeen',
-            'callback' => 'simplechatNodejsMessageHandler',
-            'data' => theme('simplechat_user_list', array('users' => simplechat_load_online_users($node), 'node' => $node)),
-          );
-          nodejs_send_message($nodejs_message);
-          // -- 
-          module_invoke_all('simplechat_chat_user_seen', $user, $node);
-        }
-        $node->chat->users = simplechat_load_online_users($node);
-        simplechat_add_js($node);
-        $node->chat->latest_messages = array();
-        foreach (simplechat_chat_load_latest_messages($node) as $message) {
-          if ($message->msg_type == 'private_message' && $user->uid != $message->recipient_uid) {
-            continue;
-          }
-          $node->chat->latest_messages[] = $message;
-        }
-        $content = theme('simplechat_chat', array('node' => $node));
-      }
-    }
-    else {
-      $content = theme('simplechat_chat_archive', array('node' => $node));
-      if (user_access('administer chat rooms')) {
-        $content .= drupal_render(drupal_get_form('simplechat_unarchive_chat_form', $node));
-      }
-    }
-    $node->content['simplechat_chat_interface'] = array('#markup' => $content);
-  }
-  else {
-    $node->content['teaser'] = array('#markup' => theme('simplechat_chat_teaser', array('node' => $node)));
-  }
-  return $node;
-}
 /**
  * Get messages for a given chat.
  *
@@ -421,36 +350,3 @@ function simplechat_chat_save_message($message, $node) {
   return FALSE;
 }
 
-/**
- * Unarchive old chat.
- *
- * @param mixed $node
- * @return boolean
- */
-function simplechat_chat_unarchive_chat($node) {
-  cache_clear_all('simplechat_chat_list', 'cache');
-  return db_update('simplechat_chat')
-    ->fields(array('when_archived' => NULL))
-    ->condition('nid', $node->nid)
-    ->execute();
-}
-
-/**
- * Archive a chat.
- *
- * @param mixed $node
- * @return boolean
- */
-function simplechat_chat_archive_chat($node) {
-  cache_clear_all('simplechat_chat_list', 'cache');
-  return db_update('simplechat_chat')
-    ->fields(array('when_archived' => time()))
-    ->condition('nid', $node->nid)
-    ->execute();
-}
-/**
- * Move old messages to archive.
- */
-function simplechat_archive_old_msgs($chat_id) {
-  db_query("UPDATE {simplechat_msg} set archived = 1 WHERE ccid = %d", $chat_id);
-}

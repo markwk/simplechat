@@ -1,4 +1,5 @@
 # Simple Chat
+* DB for simplechat_msg so messages connect to fields
 * Basic Chat functionality 
 * Archiving Functionality
 

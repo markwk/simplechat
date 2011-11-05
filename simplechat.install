@@ -15,11 +15,34 @@ function simplechat_field_schema($field) {
   if ($field['type'] == 'simplechat_app') {
       $schema['columns']= array(
         'show_simplechat' => array(
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 1,
+          'description' => 'Controls display of chat on node.',
+      ),
+      'max_users' => array(
+        'type' => 'int',
+        'default' => 1000,
+        'description' => 'Max users for this chat.',
+      ),   
+	   	'previous_messages_display_count' => array(
+	        'type' => 'int',
+	        'default' => 20,
+	        'description' => 'The number of previous messages to display to a user when they first enter a chat.',
+	      ),
+/*
+        'is_archived' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-      )
+      ),
+	      'when_archived' => array(
+	        'type' => 'int',
+	        'description' => 'UNIX timestamp of when the chat was last archived.',
+	      ),
+*/	      
     );
   }
    return $schema;
@@ -35,55 +58,6 @@ function simplechat_install() {
  * Implements hook_chema().
  */
 function simplechat_schema() {
-	  $schema['simplechat_chat'] = array(
-	    'fields' => array(
-	      'nid' => array(
-	        'type' => 'int',
-	        'not null' => TRUE,
-	        'description' => 'Primary key: node ID of the chat.',
-	      ),
-	      'crid' => array(
-	        'type' => 'int',
-	        'not null' => TRUE,
-	        'default' => 0,
-	        'description' => 'ID of the chatroom the chat belongs to. 0 signifies this chat does not belong to a room.',
-	      ),
-	      'module' => array(
-	        'type' => 'varchar',
-	        'length' => '255',
-	        'default' => 'simplechat',
-	        'description' => 'The module that owns this chat.',
-	      ),
-	      'previous_messages_display_count' => array(
-	        'type' => 'int',
-	        'default' => 20,
-	        'description' => 'The number of previous messages to display to a user when they first enter a chat.',
-	      ),
-	      'when_archived' => array(
-	        'type' => 'int',
-	        'description' => 'UNIX timestamp of when the chat was last archived.',
-	      ),
-	      'profile_picture' => array(
-	        'type' => 'int',
-	        'default' => 0,
-	        'description' => 'Whether to display user profile pictures in online lists for this chat.',
-	      ),
-	      'imagecache_preset' => array(
-	        'type' => 'varchar',
-	        'length' => '255',
-	        'description' => 'Imagecache preset for this chat.',
-	      ),
-	      'max_users' => array(
-	        'type' => 'int',
-	        'default' => 0,
-	        'description' => 'Max users for this chat.',
-	      ),
-	    ),
-	    'indexes' => array(
-	      'crid' => array('crid'),
-	    ),
-	    'primary key' => array('nid'),
-	  );
 	  $schema['simplechat_msg'] = array(
 	    'fields' => array(
 	      'cmid' => array(
