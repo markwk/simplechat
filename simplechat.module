@@ -1,4 +1,8 @@
 <?php
+
+require_once dirname(__FILE__) . '/simplechat.theme.inc';
+require_once dirname(__FILE__) . '/simplechat.form.inc';
+
 /**
  * @file
  * Simple Chat: Realtime Nodejs Chat Field
@@ -69,7 +73,7 @@ function simplechat_field_formatter_view($obj_type, $object, $field, $instance, 
 	    nodejs_add_user_to_channel($user->uid, 'simplechat_' . $nid);
 	    foreach ($items as $delta => $item) {
 		$element[$delta] = array(
-		    '#theme' => 'simplechat_theme_simplechat_default',
+		    '#theme' => 'simplechat_default',
 		);
 	    }
 	    $simplechat_path = drupal_get_path('module', 'simplechat');
@@ -148,56 +152,20 @@ function simplechat_menu() {
 	'file path' => drupal_get_path('module', 'simplechat'),
   );
  /* Need this? 
-  $items['chatroom/chat/post/message/%node/%'] = array(
-    'page callback' => 'chatroom_chat_post_message',
+  $items['simplechat/chat/post/message/%node/%'] = array(
+    'page callback' => 'simplechat_chat_post_message',
     'page arguments' => array(4, 5),
     'access arguments' => array('send chat messages'),
     'type' => MENU_CALLBACK,
   );
-  $items['chatroom/chat/get/latest/messages/%node/%'] = array(
-    'page callback' => 'chatroom_chat_get_latest_messages',
+  $items['simplechat/chat/get/latest/messages/%node/%'] = array(
+    'page callback' => 'simplechat_chat_get_latest_messages',
     'page arguments' => array(5, 6),
     'access arguments' => array('access chat rooms'),
     'type' => MENU_CALLBACK,
   );
 */
   return $items;
-}
-
-/**
- * Implements hook_theme().
- */
-function simplechat_theme($existing, $type, $theme, $path) {
-  return array(
-	'simplechat_theme_simplechat_default' => array(
-	    'variables' => array('element' => NULL),
-	),
-    'simplechat_disabled' => array(
-	    'render element' => 'form',
-	    'variables' => array('element' => NULL),
-	    'template' => 'simplechat_disabled', 
-	    'path' => drupal_get_path('module', 'simplechat') . '/templates',
-	),
-   );
-}
-
-/**
- * Implements theme().
- */
-function theme_simplechat_theme_simplechat_default($element) {
-  global $user; 
-    $base_path=drupal_get_path('module','simplechat');     
-    $simplechat_maxusers = variable_get('simplechat_maxusers', '20');
-
-  return theme_render_template(drupal_get_path('module', 'simplechat') .'/templates/simplechat.tpl.php', array('simplechatjs' => $simplechatjs, 'simplechat_maxusers' => $simplechat_maxusers, ));
-}
-
-/**
- * Implements theme().
- */
-function theme_simplechat_disabled($element) {
-
-  return theme_render_template(drupal_get_path('module', 'simplechat') .'/templates/simplechat_disabled.tpl.php');
 }
 
 /**

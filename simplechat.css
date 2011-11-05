@@ -1,1 +1,169 @@
+#simplechat table {
+  width: 100%;
+}
+#simplechat-container-archive tbody {
+  border-top: hidden;
+}
+#simplechat-container-archive td {
+  padding: 0;
+}
+#simplechat-user-options {
+  font-size: 80%;
+}
+#simplechat-board,
+#simplechat-chat-form div.item-list,
+#simplechat-container-archive {
+  border: solid 1px #e0e0e0;
+}
+#simplechat-board,
+#simplechat-container-archive {
+  padding: 1px 1px 1px 1px;
+  margin: 5px 0;
+}
+#simplechat-board p,
+#simplechat-container-archive p {
+  padding-top: 0;
+}
+#simplechat-board img,
+#simplechat-container-archive img {
+  vertical-align: top;
+}
+#simplechat-msg-alert {
+  margin-left: 10px;
+}
+.clear-both {
+  clear: both;
+}
+.simplechat-textentry-smileys,
+.simplechat-old-msg .header,
+.simplechat-msg .header {
+  padding-top: 10px;
+}
+.simplechat-user-away {
+  opacity: 0.4;
+  background: url(away.png) no-repeat left !important;
+  padding-left: 15px;
+}
+.simplechat-textentry-smileys-hidden {
+  display: none;
+}
+.simplechat-textentry-smileys img {
+  vertical-align: top;
+  margin-right: 5px;
+}
+.simplechat-textentry-options {
+  margin-top: 5px;
+  margin-bottom: -5px;
+  margin-left: -3px;
+}
+.simplechat-textentry-options input,
+.simplechat-textentry-options table,
+#simplechat-board p,
+#simplechat-container-archive p {
+  margin:0;
+}
+.simplechat-textentry-options table {
+  border-collapse: separate;
+}
+.simplechat-old-msg,
+.simplechat-old-me-msg,
+.simplechat-archive-date {
+  color: #a0a0a0;
+}
+.simplechat-archive-date {
+  white-space: nowrap;
+  margin-right: 5px;
+}
+.simplechat-system-msg {
+  color: #660000;
+}
+.simplechat-time-msg {
+  color: #999999;
+}
+.simplechat-me-msg {
+  color: #7777FF;
+}
+#simplechat-container-archive,
+.simplechat-time-msg,
+.simplechat-me-msg,
+.simplechat-old-msg,
+.simplechat-old-me-msg,
+.simplechat-system-msg,
+.simplechat-msg {
+  background-color: #f5f5f5;
+}
+.simplechat-username {
+  background-color: #DDD;
+}
+.simplechat-old-msg .header,
+.simplechat-msg .header {
+  font-weight: bold;;
+  margin-right:5px;
+  vertical-align: top;
+}
+.simplechatLink {
+  font-size: 0.9em;
+}
+.simplechat-private,
+.simplechat-me-msg,
+.simplechat-old-me-msg,
+.simplechat-time-msg,
+.simplechat-system-msg,
+.simplechatLink {
+  font-style: italic;
+}
+.simplechat-private {
+  font-weight: normal;
+}
+
+/*****************************************************************************/
+#simplechat-chat-form #edit-message {
+  padding: 0.25em;
+  font-size: 1.25em;
+}
+
+#simplechat-chat-form div.item-list {
+  float: right
+}
+  #simplechat-chat-form div.item-list ul {
+    margin: 0.25em;
+  }
+  #simplechat-chat-form div.item-list li {
+    list-style-type: none;
+  }
+
+div.ahah-response,
+#simplechat-chat-form #edit-control-fieldset {
+  display: none;
+}
+
+#simplechat-board,
+#simplechat-chat-form div.item-list {
+  overflow: auto;
+  height: 300px;
+}
+
+.simplechat-msg {
+  padding: 0.2em 0;
+}
+
+/* TODO: find a way to disable filter #2 from:
+  http://api.drupal.org/api/function/filter_filter/6 */
+.simplechat-msg > p {
+  display: inline;
+}
+
+ul#simplechat-user-list li.simplechat-user {
+  position: relative;
+}
+
+ul#simplechat-user-list li.simplechat-user .picture {
+  float: none;
+  position: relative;
+  left: 200px;
+  bottom: 10px;
+}
+
+#fullchat {
+}
 
