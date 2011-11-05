@@ -277,8 +277,6 @@ function simplechat_chat_prepare_message($message, $node) {
   $msg->uid = $message->uid;
   $msg->modified = $message->modified;
   $msg->date_format = variable_get('simplechat_msg_date_format', 'H:i:s');
-  $msg->public_css_class = variable_get('simplechat_msg_public_class', 'simplechat-msg');
-  $msg->private_css_class = variable_get('simplechat_msg_private_class', 'simplechat-private');
   $msg->themed_username = theme('simplechat_message_username', array('message' => $message, 'skip_permission_check' => TRUE));
   $msg->themed_message = theme('simplechat_message', array('message' => $message, 'node' => $node));
   $msg->recipient_uid = $message->recipient_uid;
@@ -399,7 +397,7 @@ function simplechat_get_user_timezone_offset() {
  * @return boolean
  */
 function simplechat_chat_save_message($message, $node) {
-  drupal_alter('simplechat_chat_msg', $message);
+  drupal_alter('simplechat_msg', $message);
   if (drupal_write_record('simplechat_msg', $message)) {
     $node->chat->latest_msg_id = $message['cmid'];
     // from simplechat_node.js module

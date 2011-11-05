@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Simple Chat Feature feature.
+ */
+
+include_once('simple_chat_feature.features.inc');

@@ -151,7 +151,6 @@ function simplechat_menu() {
     'file' => 'simplechat.admin.inc',
 	'file path' => drupal_get_path('module', 'simplechat'),
   );
- /* Need this? 
   $items['simplechat/chat/post/message/%node/%'] = array(
     'page callback' => 'simplechat_chat_post_message',
     'page arguments' => array(4, 5),
@@ -164,7 +163,6 @@ function simplechat_menu() {
     'access arguments' => array('access chat rooms'),
     'type' => MENU_CALLBACK,
   );
-*/
   return $items;
 }
 
