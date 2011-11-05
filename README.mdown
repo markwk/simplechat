@@ -1,0 +1,21 @@
+# Simple Chat for Drupal 7
+
+## Project Goals:
+* Real Flexibility: Simple Chat is a simple field that can be added to any node in order to provide chat. 
+* Fully Realtime: Simple Chat REQUIRES node.js backend (<http://drupal.org/project/nodejs>) for handling how messages are passed and show which users are in the chat. 
+* Simple Access Control: Access is controlled like any node or field and additional access control can be handled by various modules, like:
+
+## Simple Chat Features:
+* Due to the basic simplicity of the approach, I think additional implementations and specifics are meant to be handled in tailored features (built from Features module).
+* The advantages is that you can control and where chat can be use. 
+* For example, it might even be something you can add as a live replace from traditional comments 
+
+## INSTALLATION
+
+## NOTES / HACKING
+* This module is the product of working with the Chatroom and DrupalChat modules, which are both great creations. En bref, Simple Chat uses the good stuff for the basic chat and removes everything else, so chat can work anywhere.
+* As noted above, this module does not really handle any of the additional functions you get with Chatroom module. So if you need one of those features, consider using Chatroom module. If you want X feature in Simple Chat, I suggest you hire me or hacking it into the module yourself. 
+
+## D6 Backport:
+* This project is being started initially in Drupal 7, but hopefully will be backported to D6 eventually. 
+

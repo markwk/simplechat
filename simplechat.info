@@ -1,0 +1,9 @@
+name = Simple Chat
+description = Enables the creation of chat fields with nodejs backend
+package = Chat
+core = 7.x
+version = VERSION
+files[] = simplechat.module
+configure = admin/config/media/simplechat
+stylesheets[all][] = "simplechat.css"
+

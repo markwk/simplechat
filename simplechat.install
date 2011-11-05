@@ -1,0 +1,89 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for the whiteboard module.
+ *
+ * @see http://drupal.org/node/146939
+ * @see schemaapi
+ * @see hook_field_schema()
+ * @ingroup field_example
+ */
+/**
+ * Implements hook_field_schema().
+ */
+function simplechat_field_schema($field) {
+  if ($field['type'] == 'simplechat_app') {
+      $schema['columns']= array(
+        'show_board' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      )
+    );
+  }
+  $schema['simplechat_msg'] = array(
+    'fields' => array(
+      'cmid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'ccid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'msg_type' => array(
+        'type' => 'varchar',
+        'length' => '64',
+        'not null' => TRUE,
+      ),
+      'msg' => array(
+        'type' => 'text',
+        'size' => 'big',
+      ),
+      'anon_name' => array(
+        'type' => 'varchar',
+        'length' => '256',
+        'not null' => TRUE,
+      ),
+      'sid' => array(
+        'type' => 'varchar',
+        'length' => '64',
+        'default' => '',
+        'not null' => TRUE,
+      ),
+      'recipient_uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'modified' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'ccid' => array('ccid'),
+      'modified' => array('modified'),
+      'recipient_uid' => array('recipient_uid'),
+      'sid' => array('sid'),
+    ),
+    'primary key' => array('cmid'),
+  );
+   return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function simplechat_install() {
+  drupal_set_message(t('Simple Chat module enabled.'));
+}

@@ -1,0 +1,192 @@
+<?php
+/**
+ * @file
+ * Simple Chat: Realtime Nodejs Chat Field
+ */
+
+/**
+ * Implements hook_field_info().
+ *
+ * Provides the description of the field.
+ */
+function simplechat_field_info() {
+  return array(    
+    'simplechat_app' => array(
+      'label' => t('Simple Chat'),
+      'description' => t('Provides the option for adding a chat to a node.'),
+      'instance_settings' => array(
+        'show_board' => true,
+      ),
+      'default_widget' => 'simplechat_widget',
+      'default_formatter'  => 'simplechat_default',
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_is_empty().
+ */
+function simplechat_field_is_empty($item, $field) {
+  return FALSE;
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ *
+ */
+function simplechat_field_formatter_info() {
+  return array(
+    'simplechat_default' => array(
+      'label' => t('Default'),
+      'field types' => array('simplechat_app'),
+       'multiple values'=> FIELD_BEHAVIOR_DEFAULT,
+    ),
+  );
+}
+/**
+ * Implements hook_field_formatter_view().
+ *
+ */
+function simplechat_field_formatter_view($obj_type, $object, $field, $instance, $langcode, $items, $display) {
+    $element = array();
+    if(!$items[0]['show_board']){
+	
+	$form = drupal_get_form('simplechat_enable', $object->nid);
+	$element = array(
+	    '#theme' => 'simplechat_disabled',
+	    '#element' => $form
+	);
+	return $element;
+    }
+    
+    drupal_add_js(array('simplechat' => array('nid' => $object->nid)), 'setting');
+
+    switch ($display['type']) {
+	case 'simplechat_default':
+	    global $user;
+	    $nid = arg(1);
+        // Add User to socket.io channel for this chat
+	    nodejs_add_user_to_channel($user->uid, 'simplechat_' . $nid);
+	    foreach ($items as $delta => $item) {
+		$element[$delta] = array(
+		    '#theme' => 'simplechat_theme_simplechat_default',
+		);
+	    }
+	    $simplechat_path = drupal_get_path('module', 'simplechat');
+	    $element['#attached'] = array(
+		'js' => array(
+		    // $simplechat_path . '/js/raphael-min.js', // what javascript needed?
+		),
+	    );
+	    break;
+    }
+    return $element;
+}
+
+/**
+ * Implements hook_field_widget_info().
+ * @see simplechat_field_widget_form()
+ */
+function simplechat_field_widget_info() {
+  return array(
+    'simplechat_widget' => array(
+      'label' => t('Simplechat'),
+      'field types' => array('simplechat_app'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_widget_form().
+ *
+*/
+function simplechat_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+    if ($instance['widget']['type'] == 'simplechat_widget')
+        {
+      $element['show_board'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => isset($items[$delta]['show_board']) ? $items[$delta]['show_board'] : FALSE,
+      '#title' => t('Show simplechat with this Node'),
+      );
+        }
+  return $element;
+}
+
+/**
+ * Implementation of hook_permission()
+ */
+function simplechat_permission() {
+  return array(
+    'administer simplechat' => array(
+    'title' => 'Administer simplechat App',
+    'description' => 'Perform administrative tasks on simplechat App module.',
+    ),
+	'add simplechat field' => array(
+    'title' => 'Add simplechat App in field',
+    'description' => 'Add simplechat App in field when creating a node.',
+    ),
+	'access simplechat' => array(
+    'title' => 'Access simplechat App',
+    'description' => 'Access simplechat App.',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_menu()
+ */
+function simplechat_menu() {
+  $items = array();
+
+  $items['admin/config/media/simplechat'] = array(
+    'title' => 'Simplechat',
+    'description' => 'Configuration for the Simplechat module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('simplechat_admin_settings'),
+    'access arguments' => array('administer simplechat'),
+    'file' => 'simplechat.admin.inc',
+	'file path' => drupal_get_path('module', 'simplechat'),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function simplechat_theme($existing, $type, $theme, $path) {
+  return array(
+	'simplechat_theme_simplechat_default' => array(
+	    'variables' => array('element' => NULL),
+	),
+    'simplechat_disabled' => array(
+	    'render element' => 'form',
+	    'variables' => array('element' => NULL),
+	    'template' => 'simplechat_disabled', 
+	    'path' => drupal_get_path('module', 'simplechat') . '/templates',
+	),
+   );
+}
+
+/**
+ * Implements theme().
+ */
+function theme_simplechat_theme_simplechat_default($element) {
+  global $user; 
+    $base_path=drupal_get_path('module','simplechat');     
+  
+
+  return theme_render_template(drupal_get_path('module', 'simplechat') .'/templates/simplechat.tpl.php', array('simplechatjs' => $simplechatjs, 'height' => $height, 'width' => $width,));
+}
+
+/**
+ * Implements theme().
+ */
+function theme_simplechat_disabled($element) {
+    $form['submit'] = array(
+	'#type' => 'submit',
+	'#value' => t('Enable whitebiard'),
+	
+    );
+  return theme_render_template(drupal_get_path('module', 'simplechat') .'/templates/simplechat_disabled.tpl.php', array('form' => $form));
+}

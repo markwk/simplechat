@@ -1,0 +1,10 @@
+# Simple Chat
+* Chat functionality pulled from Chatroom / DrupalChat
+* Node.js backend Chat
+
+* Access can then be controlled via various node access modules
+* Setup allows multiple setups for chat via features module
+* Archive function
+* Simple Access 
+
+
