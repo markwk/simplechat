@@ -98,4 +98,6 @@ function simplechat_schema() {
  */
 function simplechat_uninstall() {
 	variable_del('simplechat_maxusers');
+	variable_del('simplechat_chat_date_format');
+	variable_del('simplechat_chat_message_text');
 }	
